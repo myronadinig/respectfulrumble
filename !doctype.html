@@ -1,0 +1,844 @@
+<!doctype html>  
+<html lang="en">  
+<head>  
+  <meta charset="UTF-8" />  
+  <meta name="viewport" content="width=device-width, initial-scale=1" />  
+  <title>Respectful Rumble — Animal Edition</title>  
+  <style>  
+    :root{  
+      --bg1:#86efac;  
+      --bg2:#60a5fa;  
+      --ink:#1f2937;  
+      --muted:#6b7280;  
+      --shadow: 0 14px 40px rgba(0,0,0,.18);  
+      --ring: 0 0 0 4px rgba(34,197,94,.20);  
+      --good:#22c55e;  
+      --warn:#f59e0b;  
+      --bad:#ef4444;  
+      --btn:#22c55e;  
+      --btn2:#16a34a;  
+    }  
+  
+    *{box-sizing:border-box}  
+    body{  
+      margin:0;  
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;  
+      color:var(--ink);  
+      background:  
+        radial-gradient(1200px 600px at 20% 10%, rgba(255,255,255,.70), transparent 60%),  
+        radial-gradient(1200px 600px at 80% 0%, rgba(255,255,255,.55), transparent 55%),  
+        linear-gradient(160deg, var(--bg1), var(--bg2));  
+      min-height:100vh;  
+      display:flex;  
+      align-items:flex-start;  
+      justify-content:center;  
+      padding:18px;  
+    }  
+  
+    .app{ width:min(980px, 100%); display:grid; gap:14px; }  
+  
+    .topbar{  
+      background:rgba(255,255,255,.62);  
+      border:1px solid rgba(255,255,255,.75);  
+      border-radius:18px;  
+      padding:14px;  
+      box-shadow: var(--shadow);  
+      backdrop-filter: blur(8px);  
+    }  
+    .titleRow{  
+      display:flex;  
+      align-items:center;  
+      justify-content:space-between;  
+      gap:12px;  
+      flex-wrap:wrap;  
+    }  
+    h1{  
+      margin:0;  
+      font-size:22px;  
+      display:flex;  
+      align-items:center;  
+      gap:10px;  
+    }  
+    .badge{  
+      font-size:12px;  
+      font-weight:950;  
+      background: rgba(34,197,94,.14);  
+      border:1px solid rgba(34,197,94,.28);  
+      color:#14532d;  
+      padding:4px 10px;  
+      border-radius:999px;  
+    }  
+    .subtitle{  
+      margin:8px 0 0;  
+      color:var(--muted);  
+      font-size:13px;  
+      line-height:1.35;  
+    }  
+  
+    .grid{ display:grid; grid-template-columns: 1.1fr .9fr; gap:14px; }  
+    @media (max-width: 900px){ .grid{ grid-template-columns: 1fr; } }  
+  
+    .card{  
+      background: rgba(255,255,255,.80);  
+      border:1px solid rgba(255,255,255,.7);  
+      border-radius:18px;  
+      box-shadow: var(--shadow);  
+      backdrop-filter: blur(8px);  
+      overflow:hidden;  
+    }  
+    .cardHead{  
+      padding:12px 14px;  
+      display:flex;  
+      align-items:center;  
+      justify-content:space-between;  
+      gap:10px;  
+      border-bottom:1px solid rgba(0,0,0,.06);  
+    }  
+    .cardHead .label{ font-weight:950; }  
+  
+    .pill{  
+      display:inline-flex;  
+      align-items:center;  
+      gap:8px;  
+      padding:6px 10px;  
+      border-radius:999px;  
+      background: rgba(255,255,255,.88);  
+      border:1px solid rgba(0,0,0,.06);  
+      font-weight:950;  
+      font-size:12px;  
+      color:var(--muted);  
+    }  
+    .dot{ width:10px; height:10px; border-radius:999px; display:inline-block; }  
+    .dot.good{ background: var(--good); }  
+    .dot.warn{ background: var(--warn); }  
+    .dot.bad{ background: var(--bad); }  
+  
+    /* Name input */  
+    .nameBox{  
+      display:flex;  
+      gap:10px;  
+      align-items:center;  
+      flex-wrap:wrap;  
+      margin-top:10px;  
+      padding:10px;  
+      border-radius:16px;  
+      background: rgba(255,255,255,.75);  
+      border:1px solid rgba(0,0,0,.06);  
+    }  
+    .nameBox label{  
+      font-weight:950;  
+      color:var(--muted);  
+      font-size:12px;  
+    }  
+    .nameBox input{  
+      border-radius:14px;  
+      padding:10px 12px;  
+      border:2px solid rgba(0,0,0,.10);  
+      font-weight:900;  
+      outline:none;  
+      width: 180px;  
+      background:white;  
+    }  
+    .nameBox input:focus{  
+      box-shadow: var(--ring);  
+      border-color: rgba(34,197,94,.35);  
+    }  
+    .nameBox button{  
+      cursor:pointer;  
+      border:none;  
+      border-radius:14px;  
+      padding:10px 12px;  
+      font-weight:950;  
+      background: linear-gradient(180deg, var(--btn), var(--btn2));  
+      color:white;  
+      box-shadow: 0 10px 22px rgba(0,0,0,.12);  
+    }  
+  
+    /* HUD */  
+    .hud{  
+      display:grid;  
+      grid-template-columns: repeat(5, 1fr); /* added Rank */  
+      gap:10px;  
+      padding:12px 14px;  
+    }  
+    @media (max-width: 520px){  
+      .hud{ grid-template-columns: repeat(2, 1fr); }  
+    }  
+    .stat{  
+      background: rgba(255,255,255,.92);  
+      border:1px solid rgba(0,0,0,.06);  
+      border-radius:16px;  
+      padding:10px;  
+      box-shadow: 0 8px 18px rgba(0,0,0,.08);  
+    }  
+    .stat small{ display:block; color:var(--muted); font-weight:800; font-size:12px; }  
+    .stat b{ font-size:18px; display:block; margin-top:2px; }  
+    .rankTxt{ font-size:13px; font-weight:950; }  
+  
+    /* Progress */  
+    .progressWrap{ padding:0 14px 14px; }  
+    .progressBar{  
+      height:14px;  
+      background: rgba(0,0,0,.08);  
+      border-radius:999px;  
+      overflow:hidden;  
+      border:1px solid rgba(0,0,0,.06);  
+    }  
+    .progressFill{  
+      height:100%;  
+      width:0%;  
+      background: linear-gradient(90deg, #22c55e, #60a5fa);  
+      border-radius:999px;  
+      transition: width .3s ease;  
+    }  
+    .progressText{  
+      margin-top:8px;  
+      display:flex;  
+      align-items:center;  
+      justify-content:space-between;  
+      color:var(--muted);  
+      font-size:12px;  
+      font-weight:900;  
+    }  
+  
+    /* Arena */  
+    .arena{ padding:14px; display:grid; gap:12px; }  
+    .scene{  
+      border-radius:18px;  
+      border:1px solid rgba(0,0,0,.06);  
+      background:  
+        radial-gradient(650px 240px at 50% 0%, rgba(34,197,94,.18), transparent 55%),  
+        linear-gradient(180deg, rgba(255,255,255,.96), rgba(255,255,255,.80));  
+      padding:12px;  
+      min-height: 180px;  
+      position:relative;  
+      overflow:hidden;  
+    }  
+  
+    .stickers{ position:absolute; inset:0; pointer-events:none; opacity:.35; font-size:28px; }  
+    .st1{ position:absolute; left:10px; top:8px; transform: rotate(-10deg); }  
+    .st2{ position:absolute; right:12px; top:10px; transform: rotate(12deg); }  
+    .st3{ position:absolute; left:14px; bottom:6px; transform: rotate(8deg); }  
+    .st4{ position:absolute; right:16px; bottom:10px; transform: rotate(-8deg); }  
+  
+    .fighters{  
+      display:flex;  
+      align-items:flex-end;  
+      justify-content:space-between;  
+      gap:12px;  
+      position:relative;  
+      z-index:1;  
+    }  
+    .fighter{  
+      width: calc(50% - 6px);  
+      background: rgba(255,255,255,.88);  
+      border:1px solid rgba(0,0,0,.06);  
+      border-radius:18px;  
+      padding:10px;  
+      box-shadow: 0 10px 22px rgba(0,0,0,.08);  
+      display:flex;  
+      gap:10px;  
+      align-items:center;  
+    }  
+    .avatar{  
+      width:56px; height:56px;  
+      border-radius:18px;  
+      display:grid;  
+      place-items:center;  
+      font-size:30px;  
+      background: linear-gradient(180deg, rgba(34,197,94,.20), rgba(34,197,94,.08));  
+      border:1px solid rgba(34,197,94,.22);  
+    }  
+    .avatar.rival{  
+      background: linear-gradient(180deg, rgba(96,165,250,.20), rgba(96,165,250,.08));  
+      border:1px solid rgba(96,165,250,.24);  
+    }  
+    .who b{ display:block; font-size:14px; font-weight:950; }  
+    .who small{ color:var(--muted); font-weight:800; }  
+  
+    .bubble{  
+      margin-top:10px;  
+      background: rgba(255,255,255,.92);  
+      border:1px solid rgba(0,0,0,.06);  
+      border-radius:18px;  
+      padding:10px 12px;  
+      box-shadow: 0 10px 22px rgba(0,0,0,.08);  
+      animation: pop .18s ease;  
+    }  
+    @keyframes pop{  
+      from{ transform: translateY(6px); opacity:.2; }  
+      to{ transform: translateY(0); opacity:1; }  
+    }  
+    .bubble small{ display:block; color:var(--muted); font-weight:950; font-size:12px; margin-bottom:4px; }  
+    .bubble .line{ font-size:14px; font-weight:850; line-height:1.25; }  
+  
+    /* Choices */  
+    .choices{ display:grid; gap:10px; }  
+    .choice{  
+      cursor:pointer;  
+      border-radius:18px;  
+      padding:12px;  
+      border:2px solid rgba(0,0,0,.08);  
+      background: rgba(255,255,255,.94);  
+      box-shadow: 0 10px 22px rgba(0,0,0,.10);  
+      font-weight:950;  
+      font-size:14px;  
+      text-align:left;  
+      transition: transform .06s ease, box-shadow .15s ease, border-color .15s ease;  
+    }  
+    .choice:hover{  
+      transform: translateY(-1px);  
+      box-shadow: 0 16px 28px rgba(0,0,0,.14);  
+      border-color: rgba(34,197,94,.30);  
+    }  
+    .choice:active{ transform: translateY(0); }  
+    .choice:disabled{ opacity:.55; cursor:not-allowed; transform:none; }  
+  
+    .choiceRow{ display:flex; align-items:center; justify-content:space-between; gap:10px; }  
+    .choiceHint{  
+      font-size:12px;  
+      font-weight:950;  
+      padding:4px 10px;  
+      border-radius:999px;  
+      border:1px solid rgba(0,0,0,.08);  
+      background: rgba(0,0,0,.04);  
+      color: var(--muted);  
+      flex: 0 0 auto;  
+    }  
+  
+    /* Controls */  
+    .controls{  
+      display:flex;  
+      gap:10px;  
+      flex-wrap:wrap;  
+      align-items:center;  
+      justify-content:space-between;  
+      padding:12px 14px 14px;  
+    }  
+    .btn{  
+      cursor:pointer;  
+      border:none;  
+      border-radius:16px;  
+      padding:12px 14px;  
+      font-weight:950;  
+      box-shadow: 0 10px 22px rgba(0,0,0,.12);  
+      background: linear-gradient(180deg, var(--btn), var(--btn2));  
+      color:white;  
+      transition: transform .06s ease, filter .15s ease;  
+    }  
+    .btn:hover{ filter: brightness(1.04); }  
+    .btn:active{ transform: translateY(1px); }  
+    .btn.secondary{  
+      background: rgba(255,255,255,.92);  
+      color: var(--ink);  
+      border:2px solid rgba(0,0,0,.08);  
+    }  
+    .tip{ color:var(--muted); font-size:12px; font-weight:900; }  
+  
+    /* Data */  
+    .tableWrap{ padding:12px 14px 14px; }  
+    table{ width:100%; border-collapse: collapse; }  
+    th, td{ padding:8px 6px; border-bottom: 1px solid rgba(0,0,0,.08); font-size:12px; }  
+    th{ text-align:left; color:var(--muted); font-weight:950; }  
+  
+    .final{  
+      margin-top:10px;  
+      padding:10px 12px;  
+      border-radius:18px;  
+      border:1px dashed rgba(0,0,0,.18);  
+      background: rgba(34,197,94,.10);  
+      font-weight:950;  
+      display:none;  
+      animation: pop .18s ease;  
+    }  
+  
+    /* Confetti */  
+    .confetti{  
+      position:fixed;  
+      inset:0;  
+      pointer-events:none;  
+      overflow:hidden;  
+      display:none;  
+    }  
+    .confetti i{  
+      position:absolute;  
+      top:-10px;  
+      width:10px;  
+      height:14px;  
+      border-radius:4px;  
+      opacity:.9;  
+      animation: fall 1.2s linear forwards;  
+    }  
+    @keyframes fall{  
+      to{ transform: translateY(110vh) rotate(540deg); opacity:1; }  
+    }  
+  
+    .btn:focus, .choice:focus{  
+      outline:none;  
+      box-shadow: var(--shadow), var(--ring);  
+    }  
+  </style>  
+</head>  
+  
+<body>  
+  <div class="app">  
+    <div class="topbar">  
+      <div class="titleRow">  
+        <h1>🦊 Respectful Rumble <span class="badge">Animal Edition</span></h1>  
+        <span class="pill" id="statusPill"><span class="dot warn"></span> Ready</span>  
+      </div>  
+  
+      <div class="subtitle">  
+        STEM: Variables Respect (R) and Stress (S). Formula: <b>Score = R − S</b>.  
+        After each score, you get a <b>Rank</b> 🏆  
+      </div>  
+  
+      <div class="nameBox">  
+        <label for="nameInput">Player Name:</label>  
+        <input id="nameInput" type="text" placeholder="Type your name..." maxlength="16" />  
+        <button id="saveNameBtn">Save Name</button>  
+        <span class="pill" id="nameDisplay">🦊 Player: Foxy</span>  
+      </div>  
+    </div>  
+  
+    <div class="grid">  
+      <!-- LEFT: GAME -->  
+      <div class="card">  
+        <div class="cardHead">  
+          <div class="label">Forest Arena</div>  
+          <div class="pill"><span class="dot good"></span> Score = R − S</div>  
+        </div>  
+  
+        <div class="hud">  
+          <div class="stat"><small>Round</small><b id="roundVal">1</b></div>  
+          <div class="stat"><small>Respect (R)</small><b id="rVal">50</b></div>  
+          <div class="stat"><small>Stress (S)</small><b id="sVal">20</b></div>  
+          <div class="stat"><small>Score</small><b id="scoreVal">30</b></div>  
+          <div class="stat"><small>Rank</small><b class="rankTxt" id="rankVal">🌟 Kind Cub</b></div>  
+        </div>  
+  
+        <div class="progressWrap">  
+          <div class="progressBar">  
+            <div class="progressFill" id="progressFill"></div>  
+          </div>  
+          <div class="progressText">  
+            <span id="progressText">Round 1 of 5</span>  
+            <span class="tip">Tip: Calm words help animals cooperate 🐾</span>  
+          </div>  
+        </div>  
+  
+        <div class="arena">  
+          <div class="scene">  
+            <div class="stickers" aria-hidden="true">  
+              <div class="st1">🍃</div><div class="st2">🌻</div><div class="st3">🪵</div><div class="st4">🐾</div>  
+            </div>  
+  
+            <div class="fighters">  
+              <div class="fighter">  
+                <div class="avatar">🦊</div>  
+                <div class="who">  
+                  <b id="playerNameLabel">Foxy (You)</b>  
+                  <small id="moodLeft">Focused</small>  
+                </div>  
+              </div>  
+  
+              <div class="fighter" style="justify-content:flex-end;">  
+                <div class="who" style="text-align:right;">  
+                  <b>GrumbleBear</b>  
+                  <small id="moodRight">Grumbling…</small>  
+                </div>  
+                <div class="avatar rival">🐻</div>  
+              </div>  
+            </div>  
+  
+            <div class="bubble" id="botBubble" style="display:none;">  
+              <small>GrumbleBear says</small>  
+              <div class="line" id="botLine"></div>  
+            </div>  
+  
+            <div class="bubble" id="promptBubble" style="display:none;">  
+              <small>Your goal</small>  
+              <div class="line" id="promptLine"></div>  
+            </div>  
+          </div>  
+  
+          <div class="choices" id="choices"></div>  
+  
+          <div class="final" id="finalBox"></div>  
+        </div>  
+  
+        <div class="controls">  
+          <div style="display:flex; gap:10px; flex-wrap:wrap;">  
+            <button class="btn" id="nextBtn">Start / Next ➜</button>  
+            <button class="btn secondary" id="resetBtn">Reset</button>  
+          </div>  
+          <div class="tip">Keyboard: <b>1</b> <b>2</b> <b>3</b> choose · <b>N</b> next</div>  
+        </div>  
+      </div>  
+  
+      <!-- RIGHT: DATA -->  
+      <div class="card">  
+        <div class="cardHead">  
+          <div class="label">Data Table (STEM)</div>  
+          <div class="pill"><span class="dot good"></span> Track your results</div>  
+        </div>  
+        <div class="tableWrap">  
+          <div class="tip">Each round is one test. Your choice changes R and S.</div>  
+          <table>  
+            <thead>  
+              <tr>  
+                <th>Round</th>  
+                <th>Choice</th>  
+                <th>ΔR</th>  
+                <th>ΔS</th>  
+                <th>R</th>  
+                <th>S</th>  
+                <th>Score</th>  
+                <th>Rank</th>  
+              </tr>  
+            </thead>  
+            <tbody id="dataBody"></tbody>  
+          </table>  
+        </div>  
+      </div>  
+    </div>  
+  </div>  
+  
+  <div class="confetti" id="confetti"></div>  
+  
+<script>  
+(() => {  
+  const MAX_ROUNDS = 5;  
+  
+  const scenarios = [  
+    {  
+      bot: "You cut in line at the berry bush! That’s not fair!",  
+      prompt: "What should you say?",  
+      choices: [  
+        { text: "Oops, sorry! You can go first. I didn’t mean to cut.", dR:+8, dS:-3, hint:"Kind + fair" },  
+        { text: "Relax. It’s just berries.", dR:+2, dS:+2, hint:"So-so" },  
+        { text: "Too bad. I’m taking them.", dR:-8, dS:+6, hint:"Rude" }  
+      ]  
+    },  
+    {  
+      bot: "Your den idea is bad. Mine is better!",  
+      prompt: "Pick the most respectful response:",  
+      choices: [  
+        { text: "Tell me your idea. Then we can mix the best parts.", dR:+8, dS:-2, hint:"Teamwork" },  
+        { text: "Whatever… do it your way.", dR:+1, dS:+3, hint:"Gives up" },  
+        { text: "No, YOUR idea is bad!", dR:-9, dS:+6, hint:"Escalates" }  
+      ]  
+    },  
+    {  
+      bot: "Give me that shiny acorn! I want it now!",  
+      prompt: "What do you do?",  
+      choices: [  
+        { text: "We can take turns. You can have it after me.", dR:+7, dS:-2, hint:"Sharing" },  
+        { text: "Stop asking me.", dR:+1, dS:+2, hint:"Short" },  
+        { text: "Back off!", dR:-7, dS:+6, hint:"Angry" }  
+      ]  
+    },  
+    {  
+      bot: "Hurry up, slow fox! You’re taking forever!",  
+      prompt: "Choose your response:",  
+      choices: [  
+        { text: "Please be respectful. I’m moving as fast as I can.", dR:+7, dS:-2, hint:"Calm boundary" },  
+        { text: "I am NOT slow!", dR:+2, dS:+3, hint:"Defensive" },  
+        { text: "Shut up!", dR:-10, dS:+7, hint:"Mean" }  
+      ]  
+    },  
+    {  
+      bot: "I’m not helping build the shelter. You do it!",  
+      prompt: "Best answer?",  
+      choices: [  
+        { text: "Let’s split the work fairly and make a plan.", dR:+8, dS:-2, hint:"Plan" },  
+        { text: "Fine… I’ll do it.", dR:+1, dS:+5, hint:"Unfair" },  
+        { text: "You’re lazy! I’m telling the Owl Teacher!", dR:-6, dS:+6, hint:"Attacks" }  
+      ]  
+    }  
+  ];  
+  
+  // DOM  
+  const roundVal = document.getElementById("roundVal");  
+  const rVal = document.getElementById("rVal");  
+  const sVal = document.getElementById("sVal");  
+  const scoreVal = document.getElementById("scoreVal");  
+  const rankVal = document.getElementById("rankVal");  
+  
+  const progressFill = document.getElementById("progressFill");  
+  const progressText = document.getElementById("progressText");  
+  
+  const statusPill = document.getElementById("statusPill");  
+  const moodLeft = document.getElementById("moodLeft");  
+  const moodRight = document.getElementById("moodRight");  
+  
+  const botBubble = document.getElementById("botBubble");  
+  const promptBubble = document.getElementById("promptBubble");  
+  const botLine = document.getElementById("botLine");  
+  const promptLine = document.getElementById("promptLine");  
+  
+  const choicesEl = document.getElementById("choices");  
+  const dataBody = document.getElementById("dataBody");  
+  const finalBox = document.getElementById("finalBox");  
+  
+  const nextBtn = document.getElementById("nextBtn");  
+  const resetBtn = document.getElementById("resetBtn");  
+  
+  const confetti = document.getElementById("confetti");  
+  
+  // Name elements  
+  const nameInput = document.getElementById("nameInput");  
+  const saveNameBtn = document.getElementById("saveNameBtn");  
+  const nameDisplay = document.getElementById("nameDisplay");  
+  const playerNameLabel = document.getElementById("playerNameLabel");  
+  
+  // State  
+  const state = {  
+    round: 1,  
+    R: 50,  
+    S: 20,  
+    inRound: false,  
+    currentScenario: null,  
+    playerName: "Foxy"  
+  };  
+  
+  const clamp = (v) => Math.max(0, Math.min(100, v));  
+  const score = () => state.R - state.S;  
+  
+  // ✅ Ranking system (based on current score)  
+  function getRank(sc){  
+    // R and S are 0..100, so score can be -100..100  
+    if (sc >= 55) return { name: "🏆 Respect Ranger", level: "good" };  
+    if (sc >= 35) return { name: "🌟 Kind Cub", level: "good" };  
+    if (sc >= 15) return { name: "🙂 Peaceful Pup", level: "warn" };  
+    return { name: "😤 Grumble Goblin", level: "bad" };  
+  }  
+  
+  function setStatus(text, level){  
+    const dotClass = level === "good" ? "good" : level === "bad" ? "bad" : "warn";  
+    statusPill.innerHTML = `<span class="dot ${dotClass}"></span> ${escapeHtml(text)}`;  
+  }  
+  
+  function render(){  
+    const sc = score();  
+    const rk = getRank(sc);  
+  
+    roundVal.textContent = state.round;  
+    rVal.textContent = state.R;  
+    sVal.textContent = state.S;  
+    scoreVal.textContent = sc;  
+    rankVal.textContent = rk.name;  
+  
+    const pct = Math.round(((Math.min(state.round, MAX_ROUNDS) - 1) / MAX_ROUNDS) * 100);  
+    progressFill.style.width = pct + "%";  
+    progressText.textContent = `Round ${Math.min(state.round, MAX_ROUNDS)} of ${MAX_ROUNDS}`;  
+  
+    moodLeft.textContent =  
+      state.S >= 60 ? "😵 Stressy paws" :  
+      state.R >= 70 ? "😄 Friendly fox" :  
+      "🙂 Focused";  
+  
+    moodRight.textContent =  
+      state.R >= 75 ? "😶 Bear calms down…" :  
+      state.S >= 60 ? "😤 Bear is loud!" :  
+      "🐻 Grumbling…";  
+  
+    playerNameLabel.textContent = `${state.playerName} (You)`;  
+    nameDisplay.textContent = `🦊 Player: ${state.playerName}`;  
+  }  
+  
+  function saveName(){  
+    let newName = nameInput.value.trim();  
+    if (!newName) newName = "Foxy";  
+    if (newName.length > 16) newName = newName.slice(0, 16);  
+  
+    state.playerName = newName;  
+    nameInput.value = "";  
+    render();  
+    setStatus("Name saved!", "good");  
+  }  
+  
+  function showRound(){  
+    if (state.round > MAX_ROUNDS) return endGame();  
+  
+    state.inRound = true;  
+    finalBox.style.display = "none";  
+    finalBox.textContent = "";  
+  
+    setStatus("Pick the best animal response!", "warn");  
+  
+    const sc = scenarios[(state.round - 1) % scenarios.length];  
+    state.currentScenario = sc;  
+  
+    botBubble.style.display = "block";  
+    promptBubble.style.display = "block";  
+    botLine.textContent = sc.bot;  
+    promptLine.textContent = sc.prompt;  
+  
+    choicesEl.innerHTML = "";  
+    sc.choices.forEach((c, idx) => {  
+      const btn = document.createElement("button");  
+      btn.className = "choice";  
+      btn.innerHTML = `  
+        <div class="choiceRow">  
+          <div>${idx + 1}. ${escapeHtml(c.text)}</div>  
+          <div class="choiceHint">${escapeHtml(c.hint)}</div>  
+        </div>  
+      `;  
+      btn.addEventListener("click", () => choose(idx));  
+      choicesEl.appendChild(btn);  
+    });  
+  
+    render();  
+  }  
+  
+  function choose(idx){  
+    if (!state.inRound) return;  
+  
+    const c = state.currentScenario.choices[idx];  
+  
+    state.R = clamp(state.R + c.dR);  
+    state.S = clamp(state.S + c.dS);  
+  
+    const scNow = score();  
+    const rkNow = getRank(scNow);  
+  
+    const tr = document.createElement("tr");  
+    tr.innerHTML = `  
+      <td>${state.round}</td>  
+      <td>${idx + 1}</td>  
+      <td>${fmt(c.dR)}</td>  
+      <td>${fmt(c.dS)}</td>  
+      <td>${state.R}</td>  
+      <td>${state.S}</td>  
+      <td><b>${scNow}</b></td>  
+      <td>${escapeHtml(rkNow.name)}</td>  
+    `;  
+    dataBody.appendChild(tr);  
+  
+    state.inRound = false;  
+    choicesEl.querySelectorAll("button").forEach(b => b.disabled = true);  
+  
+    // Status message mentions rank ✅  
+    if (c.dR >= 7 && c.dS <= 0) setStatus(`Nice job, ${state.playerName}! Rank: ${rkNow.name}`, "good");  
+    else if (c.dR <= -7 || c.dS >= 6) setStatus(`Uh-oh ${state.playerName}… Rank: ${rkNow.name}`, "bad");  
+    else setStatus(`Okay ${state.playerName}… Rank: ${rkNow.name}`, "warn");  
+  
+    finalBox.style.display = "block";  
+    finalBox.textContent = "Round complete! Click Start / Next ➜";  
+  
+    state.round += 1;  
+    render();  
+  
+    if (state.round > MAX_ROUNDS) endGame();  
+  }  
+  
+  function endGame(){  
+    state.inRound = false;  
+    choicesEl.innerHTML = "";  
+  
+    const finalScore = score();  
+    const finalRank = getRank(finalScore);  
+  
+    let level = finalRank.level;  
+    setStatus("Game Over", level);  
+  
+    botBubble.style.display = "block";  
+    promptBubble.style.display = "block";  
+    botLine.textContent = `Final Score: ${finalScore} (Score = R − S)`;  
+    promptLine.textContent = `Final Rank: ${finalRank.name} — Great work, ${state.playerName}!`;  
+  
+    finalBox.style.display = "block";  
+    finalBox.style.background = "rgba(96,165,250,.12)";  
+    finalBox.textContent = "Press Reset to play again.";  
+  
+    if (level === "good") launchConfetti();  
+  }  
+  
+  function reset(){  
+    state.round = 1;  
+    state.R = 50;  
+    state.S = 20;  
+    state.inRound = false;  
+    state.currentScenario = null;  
+  
+    dataBody.innerHTML = "";  
+    choicesEl.innerHTML = "";  
+    botBubble.style.display = "none";  
+    promptBubble.style.display = "none";  
+    finalBox.style.display = "none";  
+    finalBox.textContent = "";  
+  
+    setStatus("Ready", "warn");  
+    render();  
+  }  
+  
+  function fmt(n){ return (n >= 0 ? "+" : "") + n; }  
+  
+  function escapeHtml(str){  
+    return String(str)  
+      .replaceAll("&", "&amp;")  
+      .replaceAll("<", "&lt;")  
+      .replaceAll(">", "&gt;")  
+      .replaceAll('"', "&quot;")  
+      .replaceAll("'", "&#039;");  
+  }  
+  
+  function launchConfetti(){  
+    confetti.style.display = "block";  
+    confetti.innerHTML = "";  
+  
+    const colors = ["#22c55e","#60a5fa","#f59e0b","#ef4444","#10b981","#34d399"];  
+    const emojis = ["🐾","🍃","⭐","🌻","🦊","🏆","🐻","🦉"];  
+  
+    const count = 60;  
+    for (let i=0; i<count; i++){  
+      const piece = document.createElement("i");  
+      piece.style.left = Math.random()*100 + "vw";  
+      piece.style.background = colors[i % colors.length];  
+      piece.style.animationDuration = (0.9 + Math.random()*0.9) + "s";  
+      piece.style.opacity = (0.6 + Math.random()*0.4).toFixed(2);  
+      piece.style.width = (8 + Math.random()*8) + "px";  
+      piece.style.height = (10 + Math.random()*10) + "px";  
+      piece.style.borderRadius = (2 + Math.random()*6) + "px";  
+      confetti.appendChild(piece);  
+  
+      if (i % 10 === 0){  
+        const emo = document.createElement("div");  
+        emo.textContent = emojis[Math.floor(Math.random()*emojis.length)];  
+        emo.style.position = "absolute";  
+        emo.style.left = Math.random()*100 + "vw";  
+        emo.style.top = "-20px";  
+        emo.style.fontSize = (18 + Math.random()*14) + "px";  
+        emo.style.animation = `fall ${1.1 + Math.random()*0.9}s linear forwards`;  
+        confetti.appendChild(emo);  
+      }  
+    }  
+  
+    setTimeout(() => {  
+      confetti.style.display = "none";  
+      confetti.innerHTML = "";  
+    }, 1600);  
+  }  
+  
+  // Events  
+  saveNameBtn.addEventListener("click", saveName);  
+  nameInput.addEventListener("keydown", (e) => { if (e.key === "Enter") saveName(); });  
+  
+  nextBtn.addEventListener("click", () => { if (!state.inRound) showRound(); });  
+  resetBtn.addEventListener("click", reset);  
+  
+  window.addEventListener("keydown", (e) => {  
+    if (e.key === "n" || e.key === "N"){ if (!state.inRound) showRound(); }  
+    if (state.inRound && (e.key === "1" || e.key === "2" || e.key === "3")){  
+      choose(parseInt(e.key, 10) - 1);  
+    }  
+  });  
+  
+  // Init  
+  render();  
+  setStatus("Ready", "warn");  
+})();  
+</script>  
+</body>  
+</html>  
